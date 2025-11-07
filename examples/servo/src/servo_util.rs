@@ -23,10 +23,10 @@ use crate::{
     waker::Waker,
 };
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 use crate::rendering_context::try_create_gpu_context;
 
-#[cfg(target_os = "android")]
+#[cfg(any(target_os = "android", target_os = "windows"))]
 use crate::rendering_context::create_software_context;
 
 pub fn spin_servo_event_loop(state: Rc<SlintServoAdapter>) {
@@ -65,14 +65,14 @@ pub fn init_servo_webview(adapter: Rc<SlintServoAdapter>, initial_url: SharedStr
 
             let physical_size = PhysicalSize::new(size.width as u32, size.height as u32);
 
-            #[cfg(not(target_os = "android"))]
+            #[cfg(not(any(target_os = "android", target_os = "windows")))]
             let rendering_adapter = {
                 let wgpu_device = state.wgpu_device();
                 let wgpu_queue = state.wgpu_queue();
                 try_create_gpu_context(wgpu_device, wgpu_queue, physical_size).unwrap()
             };
 
-            #[cfg(target_os = "android")]
+            #[cfg(any(target_os = "android", target_os = "windows"))]
             let rendering_adapter = create_software_context(physical_size);
 
             let rendering_context = rendering_adapter.get_rendering_context();

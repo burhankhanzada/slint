@@ -9,7 +9,7 @@ use smol::channel::{Receiver, Sender};
 
 use slint::ComponentHandle;
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 use slint::wgpu_27::wgpu;
 
 use crate::{MyApp, WebviewLogic, rendering_context::ServoRenderingAdapter};
@@ -36,9 +36,9 @@ pub struct SlintServoAdapterInner {
     scale_factor: f32,
     webview: Option<WebView>,
     rendering_adapter: Option<Box<dyn ServoRenderingAdapter>>,
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     device: Option<wgpu::Device>,
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     queue: Option<wgpu::Queue>,
 }
 
@@ -57,9 +57,9 @@ impl SlintServoAdapter {
                 webview: None,
                 scale_factor: 1.0,
                 rendering_adapter: None,
-                #[cfg(not(target_os = "android"))]
+                #[cfg(not(any(target_os = "android", target_os = "windows")))]
                 device: None,
-                #[cfg(not(target_os = "android"))]
+                #[cfg(not(any(target_os = "android", target_os = "windows")))]
                 queue: None,
             }),
         }
@@ -89,12 +89,12 @@ impl SlintServoAdapter {
         self.inner().scale_factor
     }
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     pub fn wgpu_device(&self) -> wgpu::Device {
         self.inner().device.as_ref().expect("Device not initialized yet").clone()
     }
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     pub fn wgpu_queue(&self) -> wgpu::Queue {
         self.inner().queue.as_ref().expect("Queue not initialized yet").clone()
     }
@@ -117,7 +117,7 @@ impl SlintServoAdapter {
         inner.rendering_adapter = Some(rendering_adapter);
     }
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     pub fn set_wgpu_device_queue(&self, device: &wgpu::Device, queue: &wgpu::Queue) {
         let mut inner = self.inner_mut();
         inner.device = Some(device.clone());

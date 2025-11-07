@@ -27,13 +27,13 @@ use crate::{
 
 slint::include_modules!();
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 use slint::wgpu_27::{WGPUConfiguration, WGPUSettings, wgpu};
 
 pub fn main() {
     let (waker_sender, waker_receiver) = channel::unbounded::<()>();
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     {
         let mut wgpu_settings = WGPUSettings::default();
         wgpu_settings.device_required_features = wgpu::Features::PUSH_CONSTANTS;
@@ -54,7 +54,7 @@ pub fn main() {
 
     let adapter_weak = Rc::downgrade(&adapter);
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_os = "windows")))]
     app.window()
         .set_rendering_notifier(move |rendering_state, graphics_api| match rendering_state {
             slint::RenderingState::RenderingSetup => {

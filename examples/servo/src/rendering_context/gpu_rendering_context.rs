@@ -14,7 +14,7 @@ use surfman::{
     chains::{PreserveBuffer, SwapChain},
 };
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 use slint::wgpu_27::wgpu;
 
 #[cfg(target_os = "linux")]

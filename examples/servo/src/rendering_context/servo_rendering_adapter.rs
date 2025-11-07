@@ -10,7 +10,7 @@ use slint::{Image, SharedPixelBuffer};
 
 use servo::{RenderingContext, SoftwareRenderingContext, webrender_api::units::DeviceIntRect};
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 use crate::rendering_context::GPURenderingContext;
 
 pub fn create_software_context(size: PhysicalSize<u32>) -> Box<dyn ServoRenderingAdapter> {
@@ -23,7 +23,7 @@ pub fn create_software_context(size: PhysicalSize<u32>) -> Box<dyn ServoRenderin
 
 /// Attempts to create a GPU-accelerated rendering context.
 /// Falls back to software rendering if GPU initialization fails or if forced via env var.
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 pub fn try_create_gpu_context(
     device: wgpu::Device,
     queue: wgpu::Queue,
@@ -56,14 +56,14 @@ pub trait ServoRenderingAdapter {
     fn get_rendering_context(&self) -> Rc<dyn RenderingContext>;
 }
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 struct ServoGPURenderingContext {
     device: wgpu::Device,
     queue: wgpu::Queue,
     rendering_context: Rc<GPURenderingContext>,
 }
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "windows")))]
 impl ServoRenderingAdapter for ServoGPURenderingContext {
     fn current_framebuffer_as_image(&self) -> Image {
         #[cfg(target_os = "linux")]
