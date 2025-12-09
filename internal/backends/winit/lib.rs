@@ -754,29 +754,42 @@ impl i_slint_core::platform::Platform for Backend {
             attrs = hook(attrs);
         }
 
-        let adapter = (self.renderer_factory_fn)(&self.shared_data).map_or_else(
-            |e| {
-                try_create_window_with_fallback_renderer(
-                    &self.shared_data,
-                    attrs.clone(),
-                    &self.shared_data.event_loop_proxy.clone(),
-                    #[cfg(all(muda, target_os = "macos"))]
-                    self.muda_enable_default_menu_bar_bar,
-                )
-                .ok_or_else(|| format!("Winit backend failed to find a suitable renderer: {e}"))
-            },
-            |renderer| {
-                Ok(WinitWindowAdapter::new(
-                    self.shared_data.clone(),
-                    renderer,
-                    attrs.clone(),
-                    #[cfg(any(enable_accesskit, muda))]
-                    self.shared_data.event_loop_proxy.clone(),
-                    #[cfg(all(muda, target_os = "macos"))]
-                    self.muda_enable_default_menu_bar_bar,
-                ))
-            },
-        )?;
+        // let adapter = (self.renderer_factory_fn)(&self.shared_data).map_or_else(
+        //     |e| {
+        //         try_create_window_with_fallback_renderer(
+        //             &self.shared_data,
+        //             attrs.clone(),
+        //             &self.shared_data.event_loop_proxy.clone(),
+        //             #[cfg(all(muda, target_os = "macos"))]
+        //             self.muda_enable_default_menu_bar_bar,
+        //         )
+        //         .ok_or_else(|| format!("Winit backend failed to find a suitable renderer: {e}"))
+        //     },
+        //     |renderer| {
+        //         Ok(WinitWindowAdapter::new(
+        //             self.shared_data.clone(),
+        //             renderer,
+        //             attrs.clone(),
+        //             #[cfg(any(enable_accesskit, muda))]
+        //             self.shared_data.event_loop_proxy.clone(),
+        //             #[cfg(all(muda, target_os = "macos"))]
+        //             self.muda_enable_default_menu_bar_bar,
+        //         ))
+        //     },
+        // )?;
+
+        let adapter = (self.renderer_factory_fn)(&self.shared_data).unwrap();
+
+        let adapter = WinitWindowAdapter::new(
+            self.shared_data.clone(),
+            adapter,
+            attrs.clone(),
+            #[cfg(any(enable_accesskit, muda))]
+            self.shared_data.event_loop_proxy.clone(),
+            #[cfg(all(muda, target_os = "macos"))]
+            self.muda_enable_default_menu_bar_bar,
+        );
+
         Ok(adapter)
     }
 
