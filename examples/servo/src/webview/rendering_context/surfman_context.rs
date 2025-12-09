@@ -11,7 +11,7 @@ use euclid::default::Size2D;
 use gleam::gl::{self, Gl};
 use glow::NativeFramebuffer;
 use image::RgbaImage;
-use servo::webrender_api::units::DeviceIntRect;
+use servo::DeviceIntRect;
 
 use surfman::{
     Adapter, Connection, Context, ContextAttributeFlags, ContextAttributes, Device, Error, GLApi,
@@ -44,7 +44,7 @@ impl Drop for SurfmanRenderingContext {
 
 impl SurfmanRenderingContext {
     pub fn new(connection: &Connection, adapter: &Adapter) -> Result<Self, Error> {
-        let mut device = connection.create_device(adapter)?;
+        let device = connection.create_device(adapter)?;
 
         let flags = ContextAttributeFlags::ALPHA
             | ContextAttributeFlags::DEPTH
@@ -97,12 +97,10 @@ impl SurfmanRenderingContext {
     pub fn bind_surface(&self, surface: Surface) -> Result<(), Error> {
         let device = &self.device.borrow();
         let context = &mut self.context.borrow_mut();
-        device
-            .bind_surface_to_context(context, surface)
-            .map_err(|(err, mut surface)| {
-                let _ = device.destroy_surface(context, &mut surface);
-                err
-            })?;
+        device.bind_surface_to_context(context, surface).map_err(|(err, mut surface)| {
+            let _ = device.destroy_surface(context, &mut surface);
+            err
+        })?;
         Ok(())
     }
 
@@ -122,17 +120,12 @@ impl SurfmanRenderingContext {
     }
 
     pub fn prepare_for_rendering(&self) {
-        let framebuffer_id = self
-            .framebuffer()
-            .map_or(0, |framebuffer| framebuffer.0.into());
-        self.gleam_gl
-            .bind_framebuffer(gleam::gl::FRAMEBUFFER, framebuffer_id);
+        let framebuffer_id = self.framebuffer().map_or(0, |framebuffer| framebuffer.0.into());
+        self.gleam_gl.bind_framebuffer(gleam::gl::FRAMEBUFFER, framebuffer_id);
     }
 
     pub fn read_to_image(&self, source_rectangle: DeviceIntRect) -> Option<RgbaImage> {
-        let framebuffer_id = self
-            .framebuffer()
-            .map_or(0, |framebuffer| framebuffer.0.into());
+        let framebuffer_id = self.framebuffer().map_or(0, |framebuffer| framebuffer.0.into());
         Self::read_framebuffer_to_image(&self.gleam_gl, framebuffer_id, source_rectangle)
     }
 
@@ -146,18 +139,12 @@ impl SurfmanRenderingContext {
         let device = &self.device.borrow();
         let context = &mut self.context.borrow_mut();
 
-        let SurfaceInfo {
-            id: _front_buffer_id,
-            size,
-            ..
-        } = device.surface_info(&surface);
+        let SurfaceInfo { id: _front_buffer_id, size, .. } = device.surface_info(&surface);
         // debug!("... getting texture for surface {:?}", front_buffer_id);
         let surface_texture = device.create_surface_texture(context, surface).ok()?;
 
-        let gl_texture = device
-            .surface_texture_object(&surface_texture)
-            .map(|tex| tex.0.get())
-            .unwrap_or(0);
+        let gl_texture =
+            device.surface_texture_object(&surface_texture).map(|tex| tex.0.get()).unwrap_or(0);
 
         Some((surface_texture, gl_texture, size))
     }
@@ -166,10 +153,7 @@ impl SurfmanRenderingContext {
         let device = &self.device.borrow();
         let context = &mut self.context.borrow_mut();
 
-        device
-            .destroy_surface_texture(context, surface_texture)
-            .map_err(|(error, _)| error)
-            .ok()
+        device.destroy_surface_texture(context, surface_texture).map_err(|(error, _)| error).ok()
     }
 
     pub fn connection(&self) -> Option<Connection> {
