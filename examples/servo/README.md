@@ -1,4 +1,3 @@
-
 # Slint Servo Example
 
 > Disclaimer: Servo is still experimental and not ready for productions use.
@@ -74,6 +73,21 @@ fn setup_wgpu() -> (wgpu::Device, wgpu::Queue) {
 
     (device, queue)
 }
+```
+
+## For Linux build
+
+### Install dependencies
+
+```bash
+sudo apt install pkg-config libfontconfig-dev llvm
+```
+
+### To run on Linux in VM
+
+```
+sudo apt install mold
+export RUSTFLAGS="-C link-arg=-fuse-ld=mold"
 ```
 
 ## For Android build
