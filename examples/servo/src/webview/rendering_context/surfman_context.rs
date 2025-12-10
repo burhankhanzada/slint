@@ -52,7 +52,7 @@ impl SurfmanRenderingContext {
         let gl_api = connection.gl_api();
         let version = match &gl_api {
             GLApi::GLES => surfman::GLVersion { major: 3, minor: 2 },
-            GLApi::GL => surfman::GLVersion { major: 3, minor: 2 },
+            GLApi::GL => surfman::GLVersion { major: 4, minor: 5 },
         };
         let context_descriptor =
             device.create_context_descriptor(&ContextAttributes { flags, version })?;
