@@ -7,7 +7,7 @@ use euclid::default::Size2D;
 use image::RgbaImage;
 use winit::dpi::PhysicalSize;
 
-use servo::{DeviceIntRect, DevicePixel, RenderingContext};
+use servo::{DeviceIntRect, RenderingContext};
 
 use surfman::{
     Connection, Device, Surface, SurfaceTexture, SurfaceType,
@@ -126,7 +126,7 @@ impl GPURenderingContext {
         let device = &self.surfman_rendering_info.device.borrow();
         let mut context = self.surfman_rendering_info.context.borrow_mut();
 
-        let surface = device
+        let mut surface = device
             .unbind_surface_from_context(&mut context)
             .map_err(VulkanTextureError::Surfman)?
             .ok_or(VulkanTextureError::NoSurface)?;
@@ -141,6 +141,7 @@ impl GPURenderingContext {
         let supported_extensions = gl_api.supported_extensions();
 
         use euclid::{Point2D, Size2D};
+        use servo::DevicePixel;
         use servo::DevicePixel;
 
         let texture = if !supported_extensions.contains("GL_EXT_memory_object")
@@ -173,7 +174,7 @@ impl GPURenderingContext {
             // The `read_to_image` implementation in `surfman_context.rs` likely assumes `make_current` has been called with the surface bound.
 
             // Let's bind it back for a moment.
-            let _ = device
+            device
                 .bind_surface_to_context(&mut context, surface)
                 .map_err(|(err, _)| VulkanTextureError::Surfman(err))?;
 
@@ -211,15 +212,17 @@ impl GPURenderingContext {
             // So standard read_pixels will be upside down relative to what we want if we don't handle it.
             // But `read_to_image` implementation usually handles this or returns `RgbaImage` which is top-down.
 
-            gl.read_pixels(
-                0,
-                0,
-                size.width as i32,
-                size.height as i32,
-                glow::RGBA,
-                glow::UNSIGNED_BYTE,
-                glow::PixelPackData::Slice(Some(&mut pixels)),
-            );
+            unsafe {
+                gl.read_pixels(
+                    0,
+                    0,
+                    size.width as i32,
+                    size.height as i32,
+                    glow::RGBA,
+                    glow::UNSIGNED_BYTE,
+                    glow::PixelPackData::Slice(Some(&mut pixels)),
+                );
+            }
 
             // Unbind again because the end of the function expects to consume `surface` to rebind it (or we change the flow).
             // The end of the function:
@@ -238,7 +241,7 @@ impl GPURenderingContext {
             // Let's Unbind it again to restore state for the `finally` block at the end?
             // `let surface = device.unbind_surface_from_context(&mut context)?.unwrap();`
 
-            let surface = device
+            surface = device
                 .unbind_surface_from_context(&mut context)
                 .map_err(VulkanTextureError::Surfman)?
                 .ok_or(VulkanTextureError::NoSurface)?;
