@@ -140,7 +140,9 @@ impl GPURenderingContext {
         let gl_api = &self.surfman_rendering_info.glow_gl;
         let supported_extensions = gl_api.supported_extensions();
 
-        if !supported_extensions.contains("GL_EXT_memory_object")
+        use euclid::default::Point2D;
+
+        let texture = if !supported_extensions.contains("GL_EXT_memory_object")
             || !supported_extensions.contains("GL_EXT_memory_object_fd")
         {
             // Fallback to CPU readback
@@ -172,12 +174,12 @@ impl GPURenderingContext {
             // Let's bind it back for a moment.
             let _ = device
                 .bind_surface_to_context(&mut context, surface)
-                .map_err(VulkanTextureError::Surfman)?;
+                .map_err(|(err, _)| VulkanTextureError::Surfman(err))?;
 
             // Now it's bound. We can read.
             let rect = DeviceIntRect::from_origin_and_size(
-                servo::euclid::Point2D::origin(),
-                servo::euclid::Size2D::new(size.width as i32, size.height as i32),
+                Point2D::origin(),
+                Size2D::new(size.width as i32, size.height as i32),
             );
 
             // We can call self.read_to_image(rect), but we are effectively inside `self` (borrowing issues?).
@@ -215,7 +217,7 @@ impl GPURenderingContext {
                 size.height as i32,
                 glow::RGBA,
                 glow::UNSIGNED_BYTE,
-                glow::PixelPackData::Slice(&mut pixels),
+                glow::PixelPackData::Slice(Some(&mut pixels)),
             );
 
             // Unbind again because the end of the function expects to consume `surface` to rebind it (or we change the flow).
