@@ -140,9 +140,6 @@ impl GPURenderingContext {
         let gl_api = &self.surfman_rendering_info.glow_gl;
         let supported_extensions = gl_api.supported_extensions();
 
-        use euclid::{Point2D, Size2D};
-        use servo::DevicePixel;
-
         let texture = if !supported_extensions.contains("GL_EXT_memory_object")
             || !supported_extensions.contains("GL_EXT_memory_object_fd")
         {
@@ -180,7 +177,7 @@ impl GPURenderingContext {
             // Explicitly bind the framebuffer if it exists, to ensure glReadPixels reads from the correct target.
             if let Some(fbo) = surface_info.framebuffer_object {
                 unsafe {
-                    gl.bind_framebuffer(glow::FRAMEBUFFER, Some(fbo));
+                    gl_api.bind_framebuffer(glow::FRAMEBUFFER, Some(fbo));
                 }
             }
 
