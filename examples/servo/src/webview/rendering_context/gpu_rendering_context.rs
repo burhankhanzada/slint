@@ -7,7 +7,7 @@ use euclid::default::Size2D;
 use image::RgbaImage;
 use winit::dpi::PhysicalSize;
 
-use servo::{DeviceIntRect, RenderingContext};
+use servo::{DeviceIntRect, DevicePixel, RenderingContext};
 
 use surfman::{
     Connection, Device, Surface, SurfaceTexture, SurfaceType,
@@ -140,7 +140,8 @@ impl GPURenderingContext {
         let gl_api = &self.surfman_rendering_info.glow_gl;
         let supported_extensions = gl_api.supported_extensions();
 
-        use euclid::default::Point2D;
+        use euclid::{Point2D, Size2D};
+        use servo::DevicePixel;
 
         let texture = if !supported_extensions.contains("GL_EXT_memory_object")
             || !supported_extensions.contains("GL_EXT_memory_object_fd")
@@ -178,8 +179,8 @@ impl GPURenderingContext {
 
             // Now it's bound. We can read.
             let rect = DeviceIntRect::from_origin_and_size(
-                Point2D::origin(),
-                Size2D::new(size.width as i32, size.height as i32),
+                Point2D::<i32, DevicePixel>::origin(),
+                Size2D::<i32, DevicePixel>::new(size.width as i32, size.height as i32),
             );
 
             // We can call self.read_to_image(rect), but we are effectively inside `self` (borrowing issues?).
