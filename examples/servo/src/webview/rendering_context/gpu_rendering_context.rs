@@ -142,7 +142,6 @@ impl GPURenderingContext {
 
         use euclid::{Point2D, Size2D};
         use servo::DevicePixel;
-        use servo::DevicePixel;
 
         let texture = if !supported_extensions.contains("GL_EXT_memory_object")
             || !supported_extensions.contains("GL_EXT_memory_object_fd")
@@ -179,10 +178,6 @@ impl GPURenderingContext {
                 .map_err(|(err, _)| VulkanTextureError::Surfman(err))?;
 
             // Now it's bound. We can read.
-            let rect = DeviceIntRect::from_origin_and_size(
-                Point2D::<i32, DevicePixel>::origin(),
-                Size2D::<i32, DevicePixel>::new(size.width as i32, size.height as i32),
-            );
 
             // We can call self.read_to_image(rect), but we are effectively inside `self` (borrowing issues?).
             // `read_to_image` takes `&self`. We have `device` and `context` borrowed mutably from `self.surfman_rendering_info`.
