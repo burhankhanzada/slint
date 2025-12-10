@@ -177,6 +177,13 @@ impl GPURenderingContext {
                 .bind_surface_to_context(&mut context, surface)
                 .map_err(|(err, _)| VulkanTextureError::Surfman(err))?;
 
+            // Explicitly bind the framebuffer if it exists, to ensure glReadPixels reads from the correct target.
+            if let Some(fbo) = surface_info.framebuffer_object {
+                unsafe {
+                    gl.bind_framebuffer(glow::FRAMEBUFFER, Some(fbo));
+                }
+            }
+
             // Now it's bound. We can read.
 
             // We can call self.read_to_image(rect), but we are effectively inside `self` (borrowing issues?).
@@ -279,7 +286,9 @@ impl GPURenderingContext {
                     sample_count: 1,
                     dimension: wgpu::TextureDimension::D2,
                     format: wgpu::TextureFormat::Rgba8Unorm,
-                    usage: wgpu::TextureUsages::TEXTURE_BINDING,
+                    usage: wgpu::TextureUsages::TEXTURE_BINDING
+                        | wgpu::TextureUsages::RENDER_ATTACHMENT
+                        | wgpu::TextureUsages::COPY_SRC,
                     view_formats: &[],
                 },
                 wgpu::util::TextureDataOrder::LayerMajor,
