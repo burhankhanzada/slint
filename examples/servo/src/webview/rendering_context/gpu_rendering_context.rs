@@ -234,6 +234,9 @@ impl GPURenderingContext {
 
             // Blit Servo's framebuffer to the imported texture
 
+            let prev_read_fbo = gl.get_parameter_i32(crate::gl_bindings::READ_FRAMEBUFFER_BINDING);
+            let prev_draw_fbo = gl.get_parameter_i32(crate::gl_bindings::DRAW_FRAMEBUFFER_BINDING);
+
             let draw_framebuffer = gl.create_framebuffer().map_err(VulkanTextureError::OpenGL)?;
             let read_framebuffer =
                 surface_info.framebuffer_object.ok_or(VulkanTextureError::NoFramebuffer)?;
@@ -269,6 +272,23 @@ impl GPURenderingContext {
             gl.delete_framebuffer(draw_framebuffer);
             gl.delete_texture(texture);
             gl_with_extensions.DeleteMemoryObjectsEXT(1, &memory_object);
+
+            gl.bind_framebuffer(
+                crate::gl_bindings::READ_FRAMEBUFFER,
+                if prev_read_fbo == 0 {
+                    None
+                } else {
+                    Some(glow::NativeFramebuffer(std::num::NonZeroU32::new(prev_read_fbo as u32).unwrap()))
+                },
+            );
+            gl.bind_framebuffer(
+                crate::gl_bindings::DRAW_FRAMEBUFFER,
+                if prev_draw_fbo == 0 {
+                    None
+                } else {
+                    Some(glow::NativeFramebuffer(std::num::NonZeroU32::new(prev_draw_fbo as u32).unwrap()))
+                },
+            );
 
             wgpu_device.create_texture_from_hal::<wgpu::wgc::api::Vulkan>(
                 hal_device.texture_from_raw(
