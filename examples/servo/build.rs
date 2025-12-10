@@ -27,7 +27,7 @@ fn main() {
 
         Registry::new(
             Api::Gles2,
-            (3, 0),
+            (3, 2),
             Profile::Core,
             Fallbacks::All,
             [
