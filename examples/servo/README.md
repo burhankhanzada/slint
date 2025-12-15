@@ -75,6 +75,39 @@ fn setup_wgpu() -> (wgpu::Device, wgpu::Queue) {
 }
 ```
 
+## For Windows build on ARM64
+
+### Prerequisites
+
+- Install Visual Studio with Desktop development with C++ option
+- Install Python
+- Cmake
+- Ninja
+
+add Cargo.toml dependencies
+
+```toml
+[patch.'https://github.com/servo/mozjs']
+mozjs = { git = "https://github.com/burhankhanzada/mozjs", branch = "main" }
+mozjs_sys = { git = "https://github.com/burhankhanzada/mozjs", branch = "main" }
+```
+
+add .cargo/config.toml
+
+```toml
+[env]
+CMAKE_GENERATOR=Ninja
+MOZJS_ARCHIVE = "https://github.com/burhankhanzada/mozjs/releases"
+LIBCLANG_PATH = "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\Llvm\\ARM64\\bin"
+```
+
+Run Visual Studio 2026 Developer Command Prompt by search developer in start menu and run it.
+
+```
+where cl ->
+# C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\bin\HostARM64\arm64\cl.exe
+```
+
 ## For Linux build
 
 ### Install dependencies
