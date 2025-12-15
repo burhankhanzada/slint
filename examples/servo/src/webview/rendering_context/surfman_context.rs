@@ -11,8 +11,8 @@ use euclid::default::Size2D;
 use gleam::gl::{self, Gl};
 use glow::NativeFramebuffer;
 use image::RgbaImage;
-use servo::webrender_api::units::DeviceIntRect;
 
+use servo::DeviceIntRect;
 use surfman::{
     Adapter, Connection, Context, ContextAttributeFlags, ContextAttributes, Device, Error, GLApi,
     NativeWidget, Surface, SurfaceAccess, SurfaceInfo, SurfaceTexture, SurfaceType,
@@ -44,7 +44,7 @@ impl Drop for SurfmanRenderingContext {
 
 impl SurfmanRenderingContext {
     pub fn new(connection: &Connection, adapter: &Adapter) -> Result<Self, Error> {
-        let mut device = connection.create_device(adapter)?;
+        let device = connection.create_device(adapter)?;
 
         let flags = ContextAttributeFlags::ALPHA
             | ContextAttributeFlags::DEPTH

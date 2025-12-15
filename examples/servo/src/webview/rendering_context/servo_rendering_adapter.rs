@@ -7,7 +7,7 @@ use euclid::Point2D;
 use slint::{Image, SharedPixelBuffer};
 use winit::dpi::PhysicalSize;
 
-use servo::{RenderingContext, SoftwareRenderingContext, webrender_api::units::DeviceIntRect};
+use servo::{DeviceIntRect, RenderingContext, SoftwareRenderingContext};
 
 use {super::GPURenderingContext, slint::wgpu_27::wgpu};
 
