@@ -12151,3 +12151,13 @@ dependencies = [
  "syn",
  "winnow",
 ]
+
+[[patch.unused]]
+name = "mozjs"
+version = "0.14.2"
+source = "git+https://github.com/burhankhanzada/mozjs?branch=main#88ac48de7dc1dbc1a47e78f5b7344c32d059a28c"
+
+[[patch.unused]]
+name = "mozjs_sys"
+version = "0.140.5-6"
+source = "git+https://github.com/burhankhanzada/mozjs?branch=main#88ac48de7dc1dbc1a47e78f5b7344c32d059a28c"

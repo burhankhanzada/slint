@@ -70,3 +70,7 @@ slint-build = { path = "../../api/rs/build" }
 
 [[package.metadata.android.uses_permission]]
 name = "android.permission.INTERNET"
+
+[patch.'https://github.com/servo/mozjs']
+mozjs = { git = "https://github.com/burhankhanzada/mozjs", branch = "main" }
+mozjs_sys = { git = "https://github.com/burhankhanzada/mozjs", branch = "main" }
