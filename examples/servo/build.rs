@@ -65,4 +65,28 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
     slint_build::compile("ui/app.slint").unwrap();
+
+    let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
+
+    // Servo requires ANGLE (libEGL.dll and libGLESv2.dll) to run on Windows.
+    // For x86_64, these are often provided by other means or standard downloads,
+    // but for ARM64, prebuilt binaries are scarce. We bundle tested ARM64 binaries
+    // in the `dlls` directory and copy them to the build output so the example runs out-of-the-box.
+    if target_os == "windows" && target_arch == "aarch64" {
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let dll_dir = Path::new(&manifest_dir).join("dlls");
+        // OUT_DIR is <target_dir>/<profile>/build/servo-example-<hash>/out
+        // We want to copy to <target_dir>/<profile>
+        if let Some(profile_dir) = out.ancestors().nth(3) {
+            for name in ["libEGL.dll", "libGLESv2.dll"] {
+                let src = dll_dir.join(name);
+                let dst = profile_dir.join(name);
+                if src.exists() {
+                    let _ = std::fs::copy(src, dst);
+                } else {
+                    println!("cargo:warning=Could not find {} in dlls folder", name);
+                }
+            }
+        }
+    }
 }

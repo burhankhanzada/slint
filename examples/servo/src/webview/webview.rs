@@ -63,15 +63,17 @@ impl WebView {
     pub fn new(
         app: MyApp,
         initial_url: SharedString,
-        device: slint::wgpu_27::wgpu::Device,
-        queue: slint::wgpu_27::wgpu::Queue,
+        #[cfg(not(target_os = "windows"))] device: slint::wgpu_27::wgpu::Device,
+        #[cfg(not(target_os = "windows"))] queue: slint::wgpu_27::wgpu::Queue,
     ) {
         let (waker_sender, waker_receiver) = channel::unbounded::<()>();
 
         let adapter = Rc::new(SlintServoAdapter::new(
             waker_sender.clone(),
             waker_receiver.clone(),
+            #[cfg(not(target_os = "windows"))]
             device,
+            #[cfg(not(target_os = "windows"))]
             queue,
         ));
 
@@ -108,7 +110,9 @@ impl WebView {
         let physical_size = PhysicalSize::new(size.width as u32, size.height as u32);
 
         let rendering_adapter = super::rendering_context::try_create_gpu_context(
+            #[cfg(not(target_os = "windows"))]
             adapter.wgpu_device(),
+            #[cfg(not(target_os = "windows"))]
             adapter.wgpu_queue(),
             physical_size,
         )
