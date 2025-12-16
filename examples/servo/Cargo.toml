@@ -45,23 +45,40 @@ wgpu-core = "27.0.1"
 wgpu = { version = "27.0.1", features = ["metal"] }
 
 libservo = { git = "https://github.com/servo/servo", rev = "706e063" }
-embedder_traits = { git = "https://github.com/servo/servo", rev = "706e063", features = ["baked-default-resources"] }
+embedder_traits = { git = "https://github.com/servo/servo", rev = "706e063", features = [
+    "baked-default-resources",
+] }
 
 [target.'cfg(any(target_os = "linux", target_os = "android"))'.dependencies]
 ash = "0.38.0"
 
 [target.'cfg(target_os = "android")'.dependencies]
-slint = { path = "../../api/rs/slint", features = ["backend-android-activity-06", "unstable-wgpu-27"] }
+slint = { path = "../../api/rs/slint", features = [
+    "backend-android-activity-06",
+    "unstable-wgpu-27",
+] }
 
-[target.'cfg(not(target_os = "android"))'.dependencies]
-slint = { path = "../../api/rs/slint", features = ["unstable-winit-030", "unstable-wgpu-27"] }
+[target.'cfg(target_os = "windows")'.dependencies]
+slint = { path = "../../api/rs/slint", features = ["unstable-winit-030"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "windows")))'.dependencies]
+slint = { path = "../../api/rs/slint", features = [
+    "unstable-winit-030",
+    "unstable-wgpu-27",
+] }
 
 [target.'cfg(target_vendor = "apple")'.dependencies]
 metal = "0.32.0"
 objc2 = "0.6.3"
 objc2-io-surface = "0.3.2"
 objc2-foundation = "0.3.2"
-objc2-metal = { version = "0.3.2", features = ["MTLDevice", "MTLAllocation", "MTLResource", "MTLTexture", "objc2-io-surface"] }
+objc2-metal = { version = "0.3.2", features = [
+    "MTLDevice",
+    "MTLAllocation",
+    "MTLResource",
+    "MTLTexture",
+    "objc2-io-surface",
+] }
 
 [build-dependencies]
 # need to add to for all host to generate gl_bindings for android

@@ -9,6 +9,7 @@ use smol::channel::{Receiver, Sender};
 
 use slint::ComponentHandle;
 
+#[cfg(not(target_os = "windows"))]
 use slint::wgpu_27::wgpu;
 
 use crate::{MyApp, WebviewLogic, webview::rendering_context::ServoRenderingAdapter};

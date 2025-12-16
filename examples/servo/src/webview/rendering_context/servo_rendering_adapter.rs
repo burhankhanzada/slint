@@ -9,6 +9,7 @@ use winit::dpi::PhysicalSize;
 
 use servo::{DeviceIntRect, RenderingContext, SoftwareRenderingContext};
 
+#[cfg(not(target_os = "windows"))]
 use {super::GPURenderingContext, slint::wgpu_27::wgpu};
 
 pub fn create_software_context(size: PhysicalSize<u32>) -> Box<dyn ServoRenderingAdapter> {
@@ -19,37 +20,32 @@ pub fn create_software_context(size: PhysicalSize<u32>) -> Box<dyn ServoRenderin
     Box::new(ServoSoftwareRenderingContext { rendering_context })
 }
 
+#[cfg(not(target_os = "windows"))]
 /// Attempts to create a GPU-accelerated rendering context.
 /// Falls back to software rendering if GPU initialization fails or if forced via env var.
 pub fn try_create_gpu_context(
-    #[cfg(not(target_os = "windows"))] device: wgpu::Device,
-    #[cfg(not(target_os = "windows"))] queue: wgpu::Queue,
+    device: wgpu::Device,
+    queue: wgpu::Queue,
     size: PhysicalSize<u32>,
 ) -> Option<Box<dyn ServoRenderingAdapter>> {
-    #[cfg(target_os = "windows")]
-    return Some(create_software_context(size));
+    // Allow forcing software rendering for testing/debugging
+    if std::env::var_os("SLINT_SERVO_FORCE_SOFTWARE").is_some() {
+        return Some(create_software_context(size));
+    }
 
-    #[cfg(not(target_os = "windows"))]
-    {
-        // Allow forcing software rendering for testing/debugging
-        if std::env::var_os("SLINT_SERVO_FORCE_SOFTWARE").is_some() {
-            return Some(create_software_context(size));
+    // Try to create GPU rendering context, fall back to software if it fails
+    match GPURenderingContext::new(size) {
+        Ok(gpu_context) => {
+            let rendering_context = Rc::new(gpu_context);
+            Some(Box::new(ServoGPURenderingContext {
+                device: device.clone(),
+                queue: queue.clone(),
+                rendering_context,
+            }))
         }
-
-        // Try to create GPU rendering context, fall back to software if it fails
-        match GPURenderingContext::new(size) {
-            Ok(gpu_context) => {
-                let rendering_context = Rc::new(gpu_context);
-                Some(Box::new(ServoGPURenderingContext {
-                    device: device.clone(),
-                    queue: queue.clone(),
-                    rendering_context,
-                }))
-            }
-            Err(_) => {
-                // GPU rendering context creation failed, fall back to software rendering
-                Some(create_software_context(size))
-            }
+        Err(_) => {
+            // GPU rendering context creation failed, fall back to software rendering
+            Some(create_software_context(size))
         }
     }
 }
