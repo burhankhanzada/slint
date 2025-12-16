@@ -79,10 +79,12 @@ fn setup_wgpu() -> (wgpu::Device, wgpu::Queue) {
 
 ### Prerequisites
 
-- Install Visual Studio with Desktop development with C++ option
 - Install Python
 - Cmake
 - Ninja
+- Install Visual Studio with Desktop development with C++ option
+- C++ Clang Compiler for Windows
+- C++ Clang-cl
 
 add Cargo.toml dependencies
 
