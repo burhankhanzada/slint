@@ -51,6 +51,9 @@ impl Drop for GPURenderingContext {
 
 impl GPURenderingContext {
     pub fn new(size: PhysicalSize<u32>) -> Result<Self, surfman::Error> {
+        #[cfg(target_os = "windows")]
+        return Err(surfman::Error::ConnectionFailed);
+
         let connection = Connection::new()?;
 
         let adapter = connection.create_adapter()?;

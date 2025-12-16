@@ -9,7 +9,6 @@ use winit::dpi::PhysicalSize;
 
 use servo::{DeviceIntRect, RenderingContext, SoftwareRenderingContext};
 
-#[cfg(not(target_os = "windows"))]
 use {super::GPURenderingContext, slint::wgpu_27::wgpu};
 
 pub fn create_software_context(size: PhysicalSize<u32>) -> Box<dyn ServoRenderingAdapter> {
@@ -20,7 +19,6 @@ pub fn create_software_context(size: PhysicalSize<u32>) -> Box<dyn ServoRenderin
     Box::new(ServoSoftwareRenderingContext { rendering_context })
 }
 
-#[cfg(not(target_os = "windows"))]
 /// Attempts to create a GPU-accelerated rendering context.
 /// Falls back to software rendering if GPU initialization fails or if forced via env var.
 pub fn try_create_gpu_context(
@@ -55,32 +53,39 @@ pub trait ServoRenderingAdapter {
     fn get_rendering_context(&self) -> Rc<dyn RenderingContext>;
 }
 
-#[cfg(not(target_os = "windows"))]
 struct ServoGPURenderingContext {
     device: wgpu::Device,
     queue: wgpu::Queue,
     rendering_context: Rc<GPURenderingContext>,
 }
 
-#[cfg(not(target_os = "windows"))]
 impl ServoRenderingAdapter for ServoGPURenderingContext {
     fn current_framebuffer_as_image(&self) -> Image {
-        #[cfg(any(target_os = "linux", target_os = "android"))]
-        let texture = self.rendering_context
-            .get_wgpu_texture_from_vulkan(&self.device, &self.queue)
-            .expect(
-                "Failed to get WGPU texture from Vulkan texture - ensure rendering context is valid",
-            );
+        #[cfg(target_os = "windows")]
+        {
+            panic!("Windows GPU rendering context should not be successfully created yet.");
+        }
 
-        #[cfg(target_vendor = "apple")]
-        let texture =
-            self.rendering_context.get_wgpu_texture_from_metal(&self.device, &self.queue).expect(
-                "Failed to get WGPU texture from Metal texture - ensure rendering context is valid",
-            );
+        #[cfg(not(target_os = "windows"))]
+        {
+            #[cfg(any(target_os = "linux", target_os = "android"))]
+            let texture = self.rendering_context
+                .get_wgpu_texture_from_vulkan(&self.device, &self.queue)
+                .expect(
+                    "Failed to get WGPU texture from Vulkan texture - ensure rendering context is valid",
+                );
 
-        Image::try_from(texture).expect(
-            "Failed to create Slint image from WGPU texture - check texture format compatibility",
-        )
+            #[cfg(target_vendor = "apple")]
+            let texture = self.rendering_context
+                .get_wgpu_texture_from_metal(&self.device, &self.queue)
+                .expect(
+                    "Failed to get WGPU texture from Metal texture - ensure rendering context is valid",
+                );
+
+            Image::try_from(texture).expect(
+                "Failed to create Slint image from WGPU texture - check texture format compatibility",
+            )
+        }
     }
 
     fn get_rendering_context(&self) -> Rc<dyn RenderingContext> {

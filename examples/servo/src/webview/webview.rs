@@ -63,28 +63,22 @@ impl WebView {
     pub fn new(
         app: MyApp,
         initial_url: SharedString,
-        #[cfg(not(target_os = "windows"))] device: slint::wgpu_27::wgpu::Device,
-        #[cfg(not(target_os = "windows"))] queue: slint::wgpu_27::wgpu::Queue,
+        device: slint::wgpu_27::wgpu::Device,
+        queue: slint::wgpu_27::wgpu::Queue,
     ) {
         let (waker_sender, waker_receiver) = channel::unbounded::<()>();
 
         let adapter = Rc::new(SlintServoAdapter::new(
             waker_sender.clone(),
             waker_receiver.clone(),
-            #[cfg(not(target_os = "windows"))]
             device,
-            #[cfg(not(target_os = "windows"))]
             queue,
         ));
 
         let state_weak = Rc::downgrade(&adapter);
         let state = super::adapter::upgrade_adapter(&state_weak);
 
-        let rendering_adapter = Self::init_rendering_adapter(
-            &app,
-            #[cfg(not(target_os = "windows"))]
-            state.clone(),
-        );
+        let rendering_adapter = Self::init_rendering_adapter(&app, state.clone());
 
         let servo = Self::init_servo_builder(state.clone());
 
@@ -105,7 +99,7 @@ impl WebView {
     /// A rendering adapter (GPU or software)
     fn init_rendering_adapter(
         app: &MyApp,
-        #[cfg(not(target_os = "windows"))] adapter: Rc<SlintServoAdapter>,
+        adapter: Rc<SlintServoAdapter>,
     ) -> Rc<Box<dyn ServoRenderingAdapter>> {
         let width = app.global::<WebviewLogic>().get_viewport_width();
         let height = app.global::<WebviewLogic>().get_viewport_height();
@@ -113,18 +107,12 @@ impl WebView {
         let size: Size2D<f32, DevicePixel> = Size2D::new(width, height);
         let physical_size = PhysicalSize::new(size.width as u32, size.height as u32);
 
-        #[cfg(not(target_os = "windows"))]
         let rendering_adapter = super::rendering_context::try_create_gpu_context(
-            #[cfg(not(target_os = "windows"))]
             adapter.wgpu_device(),
-            #[cfg(not(target_os = "windows"))]
             adapter.wgpu_queue(),
             physical_size,
         )
-        .unwrap();
-
-        #[cfg(target_os = "windows")]
-        let rendering_adapter = super::rendering_context::create_software_context(physical_size);
+        .unwrap_or_else(|| super::rendering_context::create_software_context(physical_size));
 
         let rendering_adapter_rc = Rc::new(rendering_adapter);
 
