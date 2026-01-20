@@ -91,12 +91,12 @@ jobs:
       - name: Build apk
         if: steps.cache-apk.outputs.cache-hit != 'true'
         working-directory: ui-libraries/material/examples/gallery
-        run: x build --platform android --arch arm64 --release --format 'apk'
+        run: x build --platform android --arch arm64 --release --format 'apk' --store play
 
       - name: Build aab
         if: steps.cache-aab.outputs.cache-hit != 'true'
         working-directory: ui-libraries/material/examples/gallery
-        run: x build --platform android --arch arm64 --release --format 'aab'
+        run: x build --platform android --arch arm64 --release --format 'aab' --store play
 
       # 6. Upload
       - name: "Upload Artifacts"
