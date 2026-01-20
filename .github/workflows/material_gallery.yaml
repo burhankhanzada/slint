@@ -96,7 +96,7 @@ jobs:
       - name: Build aab
         if: steps.cache-aab.outputs.cache-hit != 'true'
         working-directory: ui-libraries/material/examples/gallery
-        run: x build --platform android --arch arm64 --release --store play --format 'aab'
+        run: x build --platform android --arch arm64 --release --format 'aab'
 
       - name: Verify aab
         if: steps.cache-aab.outputs.cache-hit != 'true'
