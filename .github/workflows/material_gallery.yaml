@@ -76,7 +76,7 @@ jobs:
           path: |
             ~/.cargo/bin/x
             ~/.cargo/bin/xbuild
-          key: xbuild-cache
+          key: xbuild-git-cache
 
       - uses: Swatinem/rust-cache@v2
         if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
@@ -85,7 +85,7 @@ jobs:
 
       - name: Install xbuild
         if: (steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true') && steps.xbuild-cache.outputs.cache-hit != 'true'
-        run: cargo install xbuild
+        run: cargo install --git https://github.com/rust-mobile/xbuild
 
       # 5. Build
       - name: Build apk
