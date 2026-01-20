@@ -81,7 +81,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
         with:
-          key: android-build
+          key: android-build-xbuild-git
 
       - name: Install xbuild
         if: (steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true') && steps.xbuild-cache.outputs.cache-hit != 'true'
