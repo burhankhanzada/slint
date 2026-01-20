@@ -97,6 +97,10 @@ jobs:
         working-directory: ui-libraries/material/examples/gallery
         run: x build --platform android --arch arm64 --release --format 'apk'
 
+      - name: Clean xbuild target
+        if: steps.cache-aab.outputs.cache-hit != 'true'
+        run: rm -rf target/x
+
       - name: Build aab
         if: steps.cache-aab.outputs.cache-hit != 'true'
         working-directory: ui-libraries/material/examples/gallery
