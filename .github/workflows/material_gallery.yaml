@@ -102,7 +102,7 @@ jobs:
         if: steps.cache-aab.outputs.cache-hit != 'true'
         run: |
           wget https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar -O bundletool.jar
-          java -jar bundletool.jar build-apks --bundle=target/x/release/android/material-gallery.aab --output=material-gallery.apks
+          java -jar bundletool.jar build-apks --bundle=$GITHUB_WORKSPACE/target/x/release/android/material-gallery.aab --output=material-gallery.apks
 
       # 6. Upload
       - name: "Upload Artifacts"
