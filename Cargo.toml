@@ -187,6 +187,8 @@ windows-core = { version = "0.62.0" }
 
 [profile.release]
 lto = true
+opt-level = "s"
+strip = true
 panic = "abort"
 
 [profile.dev]
