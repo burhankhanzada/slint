@@ -5,6 +5,12 @@ name: Build an APK and AAB for the gallery example
 
 on:
   workflow_dispatch:
+    inputs:
+        disable_cache:
+          description: 'Disable caching'
+          type: boolean
+          default: false
+          required: false
   workflow_call:
     secrets:
       ANDROID_KEYSTORE_PASSWORD:
@@ -29,6 +35,7 @@ jobs:
       # 1. Check Artifact Caches
       - name: Cache apk build
         id: cache-apk
+        if: inputs.disable_cache != true
         uses: actions/cache@v5
         with:
           path: |
@@ -37,6 +44,7 @@ jobs:
 
       - name: Cache aab build
         id: cache-aab
+        if: inputs.disable_cache != true
         uses: actions/cache@v5
         with:
           path: |
@@ -69,7 +77,7 @@ jobs:
 
       # 4. Tool Caching & Installation
       - name: Cache xbuild
-        if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
+        if: (steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true') && inputs.disable_cache != true
         id: xbuild-cache
         uses: actions/cache@v5
         with:
@@ -79,7 +87,7 @@ jobs:
           key: xbuild-cache
 
       - uses: Swatinem/rust-cache@v2
-        if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
+        if: (steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true') && inputs.disable_cache != true
         with:
           key: android-build
 
