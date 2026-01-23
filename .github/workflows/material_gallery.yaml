@@ -69,11 +69,18 @@ jobs:
       - name: Add NDK LLVM to PATH
         if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
         run: echo "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+
       - name: Dump keystore
         if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
         run: |
           mkdir -p /home/runner/.android
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > $CARGO_APK_RELEASE_KEYSTORE
+
+      - name: Generate PEM key
+        if: steps.cache-apk.outputs.cache-hit != 'true' || steps.cache-aab.outputs.cache-hit != 'true'
+        run: |
+          openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 10000 -subj '/CN=Slint'
+          cat key.pem cert.pem > $CARGO_APK_RELEASE_PEM
 
       # 4. Tool Caching & Installation
       - name: Cache xbuild
