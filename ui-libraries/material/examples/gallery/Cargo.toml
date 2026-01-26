@@ -36,7 +36,7 @@ slint = { path = "../../../../api/rs/slint", features = ["renderer-skia"] }
 [build-dependencies]
 slint-build = { path = "../../../../api/rs/build" }
 
-[package.metadata.android]
+[package.metadata.android.manifest]
 package = "com.slint.material"
 
 [package.metadata.android.application]
