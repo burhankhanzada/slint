@@ -435,6 +435,7 @@ pub mod platform {
 ///
 /// See also the list of [global structs and enums](slint:StructType)
 pub mod language {
+    pub use i_slint_core::input::KeyboardModifiers;
     pub use i_slint_core::items::ColorScheme;
 
     macro_rules! export_builtin_structs {
