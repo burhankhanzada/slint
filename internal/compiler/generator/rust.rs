@@ -2412,7 +2412,7 @@ fn compile_expression(expr: &Expression, ctx: &EvaluationContext) -> TokenStream
                             m.shift = #shift;
                             m.meta = #meta;
                             m
-                        }
+                        },
                     #ignore_shift,
                     #ignore_alt))
         },
