@@ -17,7 +17,7 @@ import typing
 from typing import Any
 import pathlib
 from .models import ListModel, Model
-from .slint import Image, Color, Brush, Timer, TimerMode, KeyboardModifiers
+from .slint import Image, Color, Brush, Timer, TimerMode
 from .loop import SlintEventLoop
 from pathlib import Path
 from collections.abc import Coroutine
@@ -25,6 +25,8 @@ import asyncio
 import gettext
 import gzip
 import base64
+
+KeyboardModifiers = native.language.KeyboardModifiers
 
 Struct = native.PyStruct
 
@@ -639,3 +641,5 @@ __all__ = [
     "language",
     "KeyboardModifiers",
 ]
+
+sys.modules["slint.language"] = native.language
