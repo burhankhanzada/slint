@@ -8,3 +8,17 @@ class StandardListViewItem(typing.NamedTuple):
 
     text: str = ""
     """The text content of the item"""
+
+class KeyboardModifiers:
+    shift: bool
+    control: bool
+    alt: bool
+    meta: bool
+    def __new__(
+        cls,
+        shift: bool = False,
+        control: bool = False,
+        alt: bool = False,
+        meta: bool = False,
+    ) -> "KeyboardModifiers": ...
+    def __eq__(self, other: object) -> bool: ...

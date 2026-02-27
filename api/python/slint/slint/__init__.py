@@ -26,7 +26,7 @@ import gettext
 import gzip
 import base64
 
-KeyboardModifiers = native.language.KeyboardModifiers
+from .language import KeyboardModifiers as KeyboardModifiers
 
 Struct = native.PyStruct
 
@@ -641,5 +641,3 @@ __all__ = [
     "language",
     "KeyboardModifiers",
 ]
-
-sys.modules["slint.language"] = native.language
