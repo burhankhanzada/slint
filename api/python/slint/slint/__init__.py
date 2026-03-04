@@ -26,7 +26,7 @@ import gettext
 import gzip
 import base64
 
-from .language import KeyboardModifiers as KeyboardModifiers
+from .language import KeyboardModifiers, StandardListViewItem
 
 Struct = native.PyStruct
 
@@ -640,4 +640,5 @@ __all__ = [
     "init_translations",
     "language",
     "KeyboardModifiers",
+    "StandardListViewItem",
 ]
