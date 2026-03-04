@@ -183,9 +183,6 @@ fn slint(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<brush::PyBrush>()?;
     m.add_class::<models::PyModelBase>()?;
     m.add_class::<value::PyStruct>()?;
-    let language_module = pyo3::types::PyModule::new(_py, "language")?;
-    language_module.add_class::<language::PyKeyboardModifiers>()?;
-    m.add_submodule(&language_module)?;
     m.add_class::<async_adapter::AsyncAdapter>()?;
     m.add_class::<api_match::PyGeneratedAPI>()?;
     m.add_function(wrap_pyfunction!(run_event_loop, m)?)?;
