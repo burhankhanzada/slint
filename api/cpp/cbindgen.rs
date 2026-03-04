@@ -186,6 +186,8 @@ fn builtin_structs(path: &Path) -> anyhow::Result<()> {
     writeln!(structs_pub, "}}")?;
     // Backward-compatible alias: StandardListViewItem was previously exposed directly under slint::
     writeln!(structs_pub, "namespace slint {{ using slint::language::StandardListViewItem; }}")?;
+    // Re-export KeyboardModifiers into slint:: so that the C++ code generator can reference slint::KeyboardModifiers
+    writeln!(structs_pub, "namespace slint {{ using slint::language::KeyboardModifiers; }}")?;
     structs_priv.flush()?;
     structs_pub.flush()?;
     Ok(())
