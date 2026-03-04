@@ -26,7 +26,7 @@ import gettext
 import gzip
 import base64
 
-from .language import KeyboardModifiers, StandardListViewItem
+from .language import StandardListViewItem, KeyboardModifiers
 
 Struct = native.PyStruct
 
