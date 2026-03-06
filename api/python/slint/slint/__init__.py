@@ -7,26 +7,28 @@ r"""
 
 import os
 import sys
+import gzip
+import copy
+import types
+import base64
+import typing
+import logging
+import pathlib
+import asyncio
+import gettext
+
+from typing import Any
+from pathlib import Path
+from collections.abc import Coroutine
+
 from . import slint as native
 from . import language
 
-import types
-import logging
-import copy
-import typing
-from typing import Any
-import pathlib
+from .loop import SlintEventLoop
 from .models import ListModel, Model
 from .slint import Image, Color, Brush, Timer, TimerMode
-from .loop import SlintEventLoop
-from pathlib import Path
-from collections.abc import Coroutine
-import asyncio
-import gettext
-import gzip
-import base64
-
 from .language import StandardListViewItem, KeyboardModifiers
+
 
 Struct = native.PyStruct
 
