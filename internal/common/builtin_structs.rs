@@ -91,7 +91,7 @@ macro_rules! for_each_builtin_structs {
 
             /// This structure is generated and passed to the key press and release callbacks of the `FocusScope` element.
             struct KeyEvent {
-                @name = BuiltinPrivateStruct::KeyEvent,
+                @name = BuiltinPublicStruct::KeyEvent,
                 export {
                     /// The unicode representation of the key pressed.
                     text: SharedString,
