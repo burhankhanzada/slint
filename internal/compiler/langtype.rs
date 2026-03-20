@@ -670,7 +670,6 @@ pub enum BuiltinPrivateStruct {
     PathElement,
     PointerEvent,
     PointerScrollEvent,
-    KeyEvent,
     DropEvent,
     TableColumn,
     MenuEntry,
@@ -694,7 +693,6 @@ impl BuiltinPrivateStruct {
             | Self::FontMetrics
             | Self::TableColumn
             | Self::MenuEntry
-            | Self::KeyEvent
             | Self::PointerEvent
             | Self::PointerScrollEvent
             | Self::Edges => {
@@ -713,6 +711,7 @@ pub enum BuiltinPublicStruct {
     LogicalSize,
     StandardListViewItem,
     Keys,
+    KeyEvent,
     KeyboardModifiers,
 }
 
@@ -724,6 +723,7 @@ impl BuiltinPublicStruct {
             Self::LogicalSize => Some(SmolStr::new_static("Size")),
             Self::StandardListViewItem => Some(SmolStr::new_static("StandardListViewItem")),
             Self::Keys => Some(SmolStr::new_static("Keys")),
+            Self::KeyEvent => Some(SmolStr::new_static("KeyEvent")),
             Self::KeyboardModifiers => Some(SmolStr::new_static("KeyboardModifiers")),
         }
     }
