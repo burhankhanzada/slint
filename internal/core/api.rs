@@ -8,7 +8,7 @@ This module contains types that are public and re-exported in the slint-rs as we
 #![warn(missing_docs)]
 
 use crate::input::{InternalKeyEvent, KeyEventType, MouseEvent, TouchPhase};
-use crate::window::{WindowAdapter, WindowInner};
+use crate::window::{InputMethodProperties, InputMethodRequest, WindowAdapter, WindowInner};
 use alloc::boxed::Box;
 use alloc::string::String;
 
@@ -619,18 +619,18 @@ impl Window {
     }
 
     /// Shows the software keyboard / input method, if available.
-    pub fn show_ime(&self) {
+    pub fn show_virtual_keyboard(&self, properties: InputMethodProperties) {
+        self.0.set_text_input_focused(true);
         if let Some(internal) = self.0.window_adapter().internal(crate::InternalToken) {
-            internal.input_method_request(crate::window::InputMethodRequest::Enable(
-                crate::window::InputMethodProperties::default(),
-            ));
+            internal.input_method_request(InputMethodRequest::Enable(properties));
         }
     }
 
     /// Hides the software keyboard / input method, if available.
-    pub fn hide_ime(&self) {
+    pub fn hide_virtual_keyboard(&self) {
+        self.0.set_text_input_focused(false);
         if let Some(internal) = self.0.window_adapter().internal(crate::InternalToken) {
-            internal.input_method_request(crate::window::InputMethodRequest::Disable);
+            internal.input_method_request(InputMethodRequest::Disable);
         }
     }
 

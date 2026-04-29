@@ -63,7 +63,8 @@ impl WebViewDelegate for AppDelegate {
             EmbedderControl::InputMethod(input_method_control) => {
                 if input_method_control.allow_virtual_keyboard() {
                     if let Some(app) = self.app.upgrade() {
-                        app.window().show_ime();
+                        let properties = i_slint_core::window::InputMethodProperties::default();
+                        app.window().show_virtual_keyboard(properties);
                     }
                 }
             }
@@ -73,7 +74,7 @@ impl WebViewDelegate for AppDelegate {
 
     fn hide_embedder_control(&self, _webview: WebView, _control_id: EmbedderControlId) {
         if let Some(app) = self.app.upgrade() {
-            app.window().hide_ime();
+            app.window().hide_virtual_keyboard();
         }
     }
 }

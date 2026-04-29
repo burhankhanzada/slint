@@ -23,6 +23,24 @@ pub fn convert_slint_key_event_to_servo_input_event(
     InputEvent::Keyboard(keybord_event)
 }
 
+pub fn convert_slint_text_input_to_servo_input_events(text: &str) -> Vec<InputEvent> {
+    text.chars()
+        .map(|c| {
+            let key = Key::Character(c.to_string());
+            let keyboard_event = KeyboardEvent::new_without_event(
+                KeyState::Down,
+                key,
+                Code::Unidentified,
+                Location::Standard,
+                Modifiers::empty(),
+                false,
+                false,
+            );
+            InputEvent::Keyboard(keyboard_event)
+        })
+        .collect()
+}
+
 fn key_from_text(text: &str) -> Key {
     // Helper macro to check against a Slint Key
     macro_rules! check_key {

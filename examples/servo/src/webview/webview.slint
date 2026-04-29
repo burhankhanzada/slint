@@ -7,6 +7,7 @@ export global WebviewLogic {
 
     callback loadUrl(url: string);
     callback theme(scheme: ColorScheme);
+    callback text_input(text: string, start: int, end: int);
     callback key_event(event: KeyEvent, is_pressed: bool);
     callback resize(width: physical-length, height: physical-length);
     callback pointer(event: PointerEvent, x: physical-length, y: physical-length);
@@ -57,6 +58,10 @@ export component Webview {
         }
         key-released(event) => {
             WebviewLogic.key_event(event, false);
+            accept
+        }
+        text_input(text, start, end) => {
+            WebviewLogic.text_input(text, start, end);
             accept
         }
 

@@ -76,7 +76,8 @@ type PointerEventArg = (PointerEvent,);
 type PointerScrollEventArg = (PointerScrollEvent,);
 type PointArg = (LogicalPosition,);
 type MenuEntryArg = (MenuEntry,);
-type StringArg = (SharedString,);
+pub type StringArg = (SharedString,);
+pub type TextInputArg = (SharedString, i32, i32);
 type MenuEntryModel = crate::model::ModelRc<MenuEntry>;
 
 #[cfg(all(feature = "ffi", windows))]

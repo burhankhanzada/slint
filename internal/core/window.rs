@@ -271,7 +271,6 @@ pub enum InputMethodRequest {
 }
 
 /// This struct holds properties related to an input method.
-#[non_exhaustive]
 #[derive(Clone, Default, Debug)]
 pub struct InputMethodProperties {
     /// The text surrounding the cursor.

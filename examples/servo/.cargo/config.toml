@@ -1,0 +1,2 @@
+[env]
+SLINT_SERVO_FORCE_SOFTWARE = "1"

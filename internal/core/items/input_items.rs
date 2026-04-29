@@ -4,7 +4,7 @@
 use super::{
     EventResult, FocusReasonArg, Item, ItemConsts, ItemRc, ItemRendererRef, KeyEventArg,
     MouseCursor, PointerEvent, PointerEventArg, PointerEventButton, PointerEventKind,
-    PointerScrollEvent, PointerScrollEventArg, RenderingResult, VoidArg,
+    PointerScrollEvent, PointerScrollEventArg, RenderingResult, TextInputArg, VoidArg,
 };
 use crate::api::LogicalPosition;
 use crate::input::{
@@ -435,6 +435,7 @@ pub struct FocusScope {
     pub focus_changed_event: Callback<FocusReasonArg>,
     pub focus_gained: Callback<FocusReasonArg>,
     pub focus_lost: Callback<FocusReasonArg>,
+    pub text_input: Callback<TextInputArg, EventResult>,
     pub key_bindings: MaybeKeyBindingList,
     /// FIXME: remove this
     pub cached_rendering_data: CachedRenderingData,
@@ -624,8 +625,21 @@ impl Item for FocusScope {
                         .call(&(event.key_event.clone(),))
                 }
             }
-            KeyEventType::UpdateComposition | KeyEventType::CommitComposition => {
-                EventResult::Reject
+            KeyEventType::CommitComposition => {
+                let (start, end) = event
+                    .replacement_range
+                    .as_ref()
+                    .map(|r| (r.start, r.end))
+                    .unwrap_or((0, 0));
+                Self::FIELD_OFFSETS
+                    .text_input()
+                    .apply_pin(self)
+                    .call(&(event.key_event.text.clone(), start, end))
+            }
+            KeyEventType::UpdateComposition => {
+                // For now, we only forward committed text.
+                // In the future we might want to expose preedit text as well.
+                EventResult::Accept
             }
         };
         match r {

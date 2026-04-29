@@ -165,6 +165,7 @@ export component FocusScope {
     callback focus_changed_event(reason: FocusReason);
     callback focus_gained(reason: FocusReason);
     callback focus_lost(reason: FocusReason);
+    callback text_input(string, int, int) -> EventResult;
     //-default_size_binding:expands_to_parent_geometry
     //-accepts_focus
 

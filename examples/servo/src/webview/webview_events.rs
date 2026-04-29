@@ -17,6 +17,7 @@ use super::adapter::upgrade_adapter;
 use super::events_utils::{
     convert_input_string_to_servo_url, convert_slint_key_event_to_servo_input_event,
     convert_slint_pointer_event_to_servo_input_event,
+    convert_slint_text_input_to_servo_input_events,
 };
 
 pub struct WebViewEvents<'a> {
@@ -34,6 +35,7 @@ impl<'a> WebViewEvents<'a> {
         instance.on_buttons();
         instance.on_pointer();
         instance.on_key_event();
+        instance.on_text_input();
     }
 
     fn on_url(&self) {
@@ -137,6 +139,40 @@ impl<'a> WebViewEvents<'a> {
             let webview = adapter.webview();
             let input_event = convert_slint_key_event_to_servo_input_event(&event, is_pressed);
             webview.notify_input_event(input_event);
+        });
+    }
+
+    fn on_text_input(&self) {
+        let adapter_weak = Rc::downgrade(&self.adapter);
+        let last_text = std::rc::Rc::new(std::cell::RefCell::new(String::new()));
+        self.app.global::<WebviewLogic>().on_text_input(move |text, start, end| {
+            let adapter = upgrade_adapter(&adapter_weak);
+            let webview = adapter.webview();
+
+            let mut last = last_text.borrow_mut();
+            let text_str = text.as_str();
+
+            // Android often sends the full text with a replacement range of all.
+            // To avoid duplicates in the webview (which likely appends characters),
+            // we only send the delta if the new text extends the previous one.
+            if start == i32::MIN && end == i32::MAX && text_str.starts_with(&*last) {
+                let delta = &text_str[last.len()..];
+                if !delta.is_empty() {
+                    let input_events = convert_slint_text_input_to_servo_input_events(delta);
+                    for event in input_events {
+                        webview.notify_input_event(event);
+                    }
+                }
+            } else {
+                // For other cases, send the full text. 
+                // Note: This might still cause some duplication if the webview has state,
+                // but it's the best we can do without a full IME implementation in the bridge.
+                let input_events = convert_slint_text_input_to_servo_input_events(text_str);
+                for event in input_events {
+                    webview.notify_input_event(event);
+                }
+            }
+            *last = text_str.to_string();
         });
     }
 }
